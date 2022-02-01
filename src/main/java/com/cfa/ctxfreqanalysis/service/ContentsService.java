@@ -13,7 +13,6 @@ import com.cfa.ctxfreqanalysis.util.FrequencyAnalysisUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +32,10 @@ public class ContentsService {
         this.contextsService = contextsService;
     }
 
+    public List<ContentResponseDto> getAllContents(){
+        return contentsRepository.findAll().stream().map(cfaMapper::contentToDto).collect(Collectors.toList());
+    }
+
     public List<ContentResponseDto> getContentsByLanguage(String language) throws LanguageNotFoundException {
         try {
             return contentsRepository.findByLanguage(Language.valueOf(language.toUpperCase())).stream().map(cfaMapper::contentToDto).collect(Collectors.toList());
@@ -45,20 +48,23 @@ public class ContentsService {
         return contentsRepository.findByName(name).orElse(null);
     }
 
+    public Contents getByNameAndLanguage(String name, Language language){
+        return contentsRepository.findByNameAndLanguage(name,language).orElse(null);
+    }
 
-    public Contents addContent(ContentRequestDto contentDto) throws LanguageNotFoundException {
+    public ContentResponseDto addContent(ContentRequestDto contentDto) throws LanguageNotFoundException {
         Language language;
         try {
-            language = Language.valueOf(contentDto.getLanguage());
+            language = Language.valueOf(contentDto.getLang());
         } catch (IllegalArgumentException ex) {
             throw new LanguageNotFoundException("Language not found");
         }
 
-        Contexts ctx = contextsService.getById(contentDto.getContextId());
+        Contexts ctx = contextsService.getByNameAndLang(contentDto.getContextName(),language);
         if (ctx == null)
             throw new ContextNotFoundException("Context bulunamadi");
 
-        if (getByName(contentDto.getName()) != null)
+        if (getByNameAndLanguage(contentDto.getName(),language) != null)
             return null;
 
 
@@ -72,7 +78,7 @@ public class ContentsService {
             try {
                 InputStream inputStream = new BufferedInputStream(contentDto.getFile().getInputStream());
                 String text = FrequencyAnalysisUtil.extractContentUsingParser(inputStream);
-                content.setStats(FrequencyAnalysisUtil.countLetters(text, Language.valueOf(contentDto.getLanguage())));
+                content.setStats(FrequencyAnalysisUtil.countLetters(text, Language.valueOf(contentDto.getLang())));
                 content.setStatistics(FrequencyAnalysisUtil.calculateStatisticsAsString(content.getStats()));
             } catch (Exception exception) {
                 return null;
@@ -82,7 +88,7 @@ public class ContentsService {
         ctx.setStatistics(FrequencyAnalysisUtil.calculateStatisticsAsString(ctx.getStats()));
         contextsService.updateContext(ctx);
         updateParentContexts(ctx, content.getStats());
-        return contentsRepository.save(content);
+        return cfaMapper.contentToDto(contentsRepository.save(content));
     }
 
     private void updateParentContexts(Contexts ctx, String stats) {

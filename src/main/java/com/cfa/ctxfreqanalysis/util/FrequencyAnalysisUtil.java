@@ -24,7 +24,7 @@ public class FrequencyAnalysisUtil {
         for (char value : alphabet) {
             statMap.put(value, 0);
         }
-        char[] textArray = text.toLowerCase().toCharArray();
+        char[] textArray = text.toLowerCase(Locale.forLanguageTag(language.toString())).toCharArray();
         for (char c : textArray) {
             if(statMap.containsKey(c))
                 statMap.merge(c, 1, Integer::sum);

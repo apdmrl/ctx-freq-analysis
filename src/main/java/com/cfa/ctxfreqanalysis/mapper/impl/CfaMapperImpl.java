@@ -7,6 +7,8 @@ import com.cfa.ctxfreqanalysis.mapper.CfaMapper;
 import com.cfa.ctxfreqanalysis.model.Contents;
 import com.cfa.ctxfreqanalysis.model.Contexts;
 import com.cfa.ctxfreqanalysis.model.Language;
+import com.cfa.ctxfreqanalysis.repository.ContextsRepository;
+import com.cfa.ctxfreqanalysis.service.ContextsService;
 import com.cfa.ctxfreqanalysis.util.FrequencyAnalysisUtil;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +17,18 @@ import java.util.*;
 @Component
 public class CfaMapperImpl implements CfaMapper {
 
+    private final ContextsRepository contextsRepository;
+
+    public CfaMapperImpl(ContextsRepository contextsRepository) {
+        this.contextsRepository = contextsRepository;
+    }
+
+
     @Override
     public ContextResponseDto contextToDto(Contexts ctx) {
         return ContextResponseDto.builder()
         .id(ctx.getId())
-        .language(ctx.getLanguage())
+        .lang(ctx.getLanguage())
         .parentContextName(ctx.getParentContexts() != null ? ctx.getParentContexts().getName() : null)
         .name(ctx.getName())
         .statistics(ctx.getStatistics())
@@ -31,11 +40,11 @@ public class CfaMapperImpl implements CfaMapper {
     public ContentResponseDto contentToDto(Contents cnt) {
         return ContentResponseDto.builder()
                 .id(cnt.getId())
-                .contextId(cnt.getContextId())
+                .contextName(getContextName(cnt.getContextId()))
                 .statistics(cnt.getStatistics())
                 .stats(cnt.getStats())
                 .name(cnt.getName())
-                .language(cnt.getLanguage())
+                .lang(cnt.getLanguage())
                 .letterFrequencies(prepareLetterFrequencies(cnt.getStatistics(),cnt.getLanguage())).build();
     }
 
@@ -47,4 +56,7 @@ public class CfaMapperImpl implements CfaMapper {
         return letterFreqs;
     }
 
+    private String getContextName(Long id){
+        return contextsRepository.getById(id).getName();
+    }
 }

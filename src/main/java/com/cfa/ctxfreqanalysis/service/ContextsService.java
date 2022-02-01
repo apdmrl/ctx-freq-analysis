@@ -12,6 +12,7 @@ import com.cfa.ctxfreqanalysis.util.FrequencyAnalysisUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,9 +43,15 @@ public class ContextsService {
         return contextsRepository.findByName(name).orElse(null);
     }
 
-    public Contexts addContext(ContextRequestDto requestDto) throws LanguageNotFoundException {
-        if(getByName(requestDto.getName()) != null){
-            throw new ContextNotFoundException("there is a context with name : " + requestDto.getName());
+    public Contexts getByNameAndLang(String name, Language lang){
+        return contextsRepository.findByNameAndLanguage(name,lang).orElse(null);
+    }
+
+
+    public ContextResponseDto addContext(ContextRequestDto requestDto) throws LanguageNotFoundException {
+        Contexts ctx = getByNameAndLang(requestDto.getName(),Language.valueOf(requestDto.getLang().toUpperCase()));
+        if(ctx != null && ctx.getLanguage().equals(Language.valueOf(requestDto.getLang().toUpperCase()))){
+            throw new ContextNotFoundException("there is a context with name  " + requestDto.getName() + " and lang :"+ requestDto.getLang());
         }
         Contexts context = new Contexts();
         context.setName(requestDto.getName());
@@ -59,7 +66,7 @@ public class ContextsService {
             throw new LanguageNotFoundException("Language bulunamadi");
         }
         if(requestDto.getParentContextName() != null){
-            Contexts parentContext = getByName(requestDto.getParentContextName());
+            Contexts parentContext = getByNameAndLang(requestDto.getParentContextName(),lang);
             if(parentContext == null){
                 throw new ContextNotFoundException("there is no context with name :" + requestDto.getParentContextName());
             }
@@ -68,7 +75,7 @@ public class ContextsService {
             }
             context.setParentContexts(parentContext);
         }
-        return contextsRepository.save(context);
+        return cfaMapper.contextToDto(contextsRepository.save(context));
     }
 
     public List<ContextResponseDto> getContextsByLang(String language) throws LanguageNotFoundException {

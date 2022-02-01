@@ -12,4 +12,6 @@ public interface ContentsRepository extends JpaRepository<Contents,Long> {
     List<Contents> findByLanguage(Language language);
 
     Optional<Contents> findByName(String name);
+
+    Optional<Contents> findByNameAndLanguage(String name, Language language);
 }

@@ -12,7 +12,7 @@ public class ProjectConstants {
     static {
         Map<String,String> a = new HashMap<>();
         a.put(String.valueOf(Language.TR),"aâbcçdefgğhıiîjklmnoöprsştuüûvyz"); // 32 char
-        a.put(String.valueOf(Language.EN),"abcdefghıjklmnopqrstuvwxyz"); //26 char
+        a.put(String.valueOf(Language.EN),"abcdefghijklmnopqrstuvwxyz"); //26 char
         a.put(String.valueOf(Language.DE),"aäbcdefghıjklmnoöpqrßstuüvwxyz"); //30 char
         a.put(String.valueOf(Language.FR),"aâàbcçdeêéèëfghıïîjklmnoôœpqrstuüûùvwxyz"); //40 char
         a.put(String.valueOf(Language.ES),"aábcdeéfghıíjklmnñoópqrstuüúvwxyz"); //33 char

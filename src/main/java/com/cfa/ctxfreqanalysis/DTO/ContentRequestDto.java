@@ -15,6 +15,6 @@ public class ContentRequestDto {
     private String name;
     private String text;
     private MultipartFile file;
-    private Long contextId;
-    private String language;
+    private String contextName;
+    private String lang;
 }

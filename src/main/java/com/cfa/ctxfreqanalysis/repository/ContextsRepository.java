@@ -13,6 +13,8 @@ public interface ContextsRepository extends JpaRepository<Contexts,Long> {
 
     Optional<Contexts> findByName(String name);
 
+    Optional<Contexts> findByNameAndLanguage(String name, Language language);
+
     List<Contexts> findByLanguageAndParentContexts(Language language,Contexts contexts);
 
 }

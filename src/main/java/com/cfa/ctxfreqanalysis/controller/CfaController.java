@@ -2,8 +2,6 @@ package com.cfa.ctxfreqanalysis.controller;
 
 import com.cfa.ctxfreqanalysis.DTO.*;
 import com.cfa.ctxfreqanalysis.exceptions.LanguageNotFoundException;
-import com.cfa.ctxfreqanalysis.model.Contents;
-import com.cfa.ctxfreqanalysis.model.Contexts;
 import com.cfa.ctxfreqanalysis.service.AnalyzeService;
 import com.cfa.ctxfreqanalysis.service.ContentsService;
 import com.cfa.ctxfreqanalysis.service.ContextsService;
@@ -11,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -34,6 +31,11 @@ public class CfaController {
         return new ResponseEntity<>(contextsService.getAllContexts(), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/getAllContents")
+    public ResponseEntity<List<ContentResponseDto>> getAllContents(){
+        return new ResponseEntity<>(contentsService.getAllContents(), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/getContexts")
     public ResponseEntity<List<ContextResponseDto>> getContexts(@RequestParam("lang") String language) throws LanguageNotFoundException {
         return new ResponseEntity<>(contextsService.getContextsByLang(language), HttpStatus.OK);
@@ -50,12 +52,12 @@ public class CfaController {
     }
 
     @PostMapping(value = "/addContent")
-    public ResponseEntity<Contents> addContent(@ModelAttribute ContentRequestDto requestDto) throws LanguageNotFoundException {
+    public ResponseEntity<ContentResponseDto> addContent(@ModelAttribute ContentRequestDto requestDto) throws LanguageNotFoundException {
         return new ResponseEntity<>(contentsService.addContent(requestDto), HttpStatus.OK);
     }
 
     @PostMapping(value = "/addContext")
-    public ResponseEntity<Contexts> addContext(@RequestBody ContextRequestDto requestDto) throws LanguageNotFoundException {
+    public ResponseEntity<ContextResponseDto> addContext(@RequestBody ContextRequestDto requestDto) throws LanguageNotFoundException {
         return new ResponseEntity<>(contextsService.addContext(requestDto), HttpStatus.OK);
     }
 

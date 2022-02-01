@@ -20,9 +20,9 @@ public class ContentResponseDto implements Serializable {
 
     private String stats;
 
-    private Language language;
+    private Language lang;
 
-    private Long contextId;
+    private String contextName;
 
     private String statistics;
 

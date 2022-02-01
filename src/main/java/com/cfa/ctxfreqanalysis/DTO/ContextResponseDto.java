@@ -20,7 +20,7 @@ public class ContextResponseDto implements Serializable {
 
     private String stats;
 
-    private Language language;
+    private Language lang;
 
     private String parentContextName;
 
